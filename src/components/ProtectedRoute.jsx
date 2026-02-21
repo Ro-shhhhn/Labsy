@@ -1,26 +1,17 @@
-import { useAuth } from '../hooks/useUser';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-export default function ProtectedRoute({ children }) {
+export default function ProtectedRoute() {
   const { user, loading } = useAuth();
-  const location = useLocation();
-
-  // Only log on actual state changes (reduce noise)
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[ProtectedRoute]', location.pathname, '| loading:', loading, '| user:', user?.email ?? 'null');
-  }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-gray-600 text-lg">Loading...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900">
+        <h1 className="text-3xl font-bold text-indigo-400 mb-4">🔬 Labsy</h1>
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-400"></div>
       </div>
     );
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
+  return user ? <Outlet /> : <Navigate to="/login" />;
 }
